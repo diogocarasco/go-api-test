@@ -1,0 +1,193 @@
+swagger: '2.0'
+info:
+  version: 0.2.0
+  title: GO API
+  description: Catálogo de feiras livres de SP
+consumes:
+  - application/json
+produces:
+  - application/json
+schemes:
+  - http
+paths:
+  /:
+    get:
+      summary: Home
+      description: Exibe a mensagem da home
+      responses:
+        '200':
+          description: Hello!!
+  /feira:
+    get:
+      summary: Lista de feiras
+      description: Lista de feiras de acordo com o filtro
+      parameters:
+        - name: bairro
+          in: query
+          description: Bairro do endereço
+          type: string
+          required: false
+      responses:
+        '200':
+          description: Lista de feiras encontradas
+          schema:
+            $ref: '#/definitions/Feiras'
+  /feira/{id}:
+    get:
+      summary: Lista feira por ID
+      description: Lista um registro de feira de acordo com o ID informado
+      parameters:
+        - name: id
+          in: path
+          description: ID da feira
+          type: string
+          required: true
+      responses:
+        '204':
+          description: Registro de feira encontrado
+          schema:
+            $ref: '#/definitions/Feiras'
+        '400':
+          description: Nenhum registro encontrado
+          schema:
+            $ref: '#/definitions/Erro'
+  /feira/:
+    post:
+      summary: Criar registro de feira
+      description: Cria um novo registro de feira
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: Dados da feira
+          schema:
+            $ref: '#/definitions/Feiras'
+      responses:
+        '201':
+          description: ID da feira criada
+          schema:
+            $ref: '#/definitions/FeiraCriada'
+        '400':
+          description: Bad request (Data validation)
+  /feira /{id}:
+    patch:
+      summary: Alterar registro de feira
+      description: Altera um registro de feira conforme os parâmetros
+      parameters:
+        - name: id
+          in: path
+          description: ID da feira
+          type: string
+          required: true      
+        - name: body
+          in: body
+          required: true
+          description: Dados da feira
+          schema:
+            $ref: '#/definitions/Feiras'
+      responses:
+        '201':
+          description: Feira atualizada
+          schema:
+            $ref: '#/definitions/Feiras'
+        '400':
+          description: Bad request (Data validation)
+    delete:
+      summary: Deleta registro de feira
+      description: Delete um registro de feira de acordo com o ID informado
+      parameters:
+        - name: id
+          in: path
+          description: ID da feira
+          type: string
+          required: true
+      responses:
+        '204':
+          description: Feira deletada
+          schema:
+            $ref: '#/definitions/FeiraDeletada'
+        '404':
+          description: Nenhum registro afetado
+          schema:
+            $ref: '#/definitions/Erro'
+definitions:
+  Feiras:
+    properties:
+      LONG:
+        type: integer
+        example: -46450426
+      LAT:
+        type: integer
+        example: -23602582
+      SETCENS:
+        type: integer
+        example: 355030833000022
+      AREAP:
+        type: integer
+        example: 3550308005274
+      CODDIST:
+        type: integer
+        example: 32
+      DISTRITO:
+        type: string
+        example: IGUATEMI
+      CODSUBPREF:
+        type: integer
+        example: 30
+      SUBPREF:
+        type: string
+        example: SAO MATEUS
+      REGIAO5:
+        type: string
+        example: Leste
+      REGIAO8:
+        type: string
+        example: Leste 2
+      NOME_FEIRA:
+        type: string
+        example: JD.BOA ESPERANCA
+      REGISTRO:
+        type: string
+        example: 5171-3
+      LOGRADOURO:
+        type: string
+        example: RUA IGUPIARA
+      NUMERO:
+        type: string
+        example: S/N
+      BAIRRO:
+        type: string
+        example: JD BOA ESPERANCA
+      REFERENCIA:
+        type: string
+        example: TV RUA PRETORIA
+    required:
+      - LONG
+      - LAT
+      - SETCENS
+      - AREAP
+      - CODDIST
+      - DISTRITO
+      - CODSUBPREF
+      - SUBPREF
+      - REGIAO5
+      - REGIAO8
+      - NOME_FEIRA
+      - REGISTRO
+      - LOGRADOURO
+      - BAIRRO
+  Erro:
+    properties:
+      data:
+        type: string
+        example: "[]"
+  FeiraCriada:
+    properties:
+      data:
+        type: string
+        example: "1"    
+  FeiraDeletada:
+    properties:
+      data:
+        type: boolean
+        example: true           
