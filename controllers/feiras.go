@@ -2,33 +2,16 @@ package controllers
 
 import (
 	"fmt"
-	"go-api-test/database"
-	"go-api-test/models"
-	"go-api-test/utils"
 	"net/http"
 	"path/filepath"
+
+	"github.com/diogocarasco/go-api-test/database"
+	"github.com/diogocarasco/go-api-test/models"
+	"github.com/diogocarasco/go-api-test/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
-
-// GetFeiras retrieve all registers from FEIRAS
-func GetFeiras(c *gin.Context) {
-
-	var feiras []models.Feiras
-
-	var querystring = models.Feiras{}
-	bairro := c.Query("bairro")
-	if bairro != "" {
-		querystring.BAIRRO = bairro
-		database.DB.Where(&querystring, "BAIRRO").Find(&feiras)
-	} else {
-		database.DB.Find(&feiras)
-	}
-
-	c.JSON(http.StatusOK, gin.H{"data": feiras})
-	logrus.Debug(feiras)
-}
 
 // GetFeirasById retrieve registers from FEIRAS by ID
 func GetFeirasById(c *gin.Context) {
@@ -47,8 +30,8 @@ func GetFeirasById(c *gin.Context) {
 
 }
 
-// GetFeirasByQuerystring retrieve registers from FEIRAS based on the passed query string filter
-func GetFeirasByQuerystring(c *gin.Context) {
+// GetFeiras retrieve registers from FEIRAS based on the passed query string filter
+func GetFeiras(c *gin.Context) {
 
 	var feiras *models.Feiras
 	whereMap := make(map[string]interface{})
@@ -73,7 +56,7 @@ func GetFeirasByQuerystring(c *gin.Context) {
 		whereMap["bairro"] = bairro
 	}
 
-	err := database.DB.Debug().Where(whereMap).Find(&feiras).Error
+	err := database.DB.Where(whereMap).Find(&feiras).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"data": "{}"})
 		logrus.Info("data:" + "[]")

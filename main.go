@@ -1,8 +1,8 @@
 package main
 
 import (
-	configs "go-api-test/config"
-	"go-api-test/database"
+	configs "github.com/diogocarasco/go-api-test/config"
+	"github.com/diogocarasco/go-api-test/database"
 )
 
 func main() {

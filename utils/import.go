@@ -9,7 +9,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"go-api-test/models"
+	"github.com/diogocarasco/go-api-test/models"
 )
 
 func ImportFile(filename string) ([]models.Feiras, error) {

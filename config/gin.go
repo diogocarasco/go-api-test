@@ -1,8 +1,8 @@
 package configs
 
 import (
-	"go-api-test/controllers"
-	"go-api-test/middlewares"
+	"github.com/diogocarasco/go-api-test/controllers"
+	"github.com/diogocarasco/go-api-test/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,7 +18,7 @@ func GetServer() *gin.Engine {
 	server.Use(middlewares.InstanaTracerMiddleware())
 
 	server.GET("/", func(c *gin.Context) { c.JSON(200, "Hello!!") }) // HELLO!
-	server.GET("/feira", controllers.GetFeirasByQuerystring)         // Fetch all rows
+	server.GET("/feira", controllers.GetFeiras)                      // Fetch all rows
 	server.GET("/feira/:id", controllers.GetFeirasById)              // Fetch rows by ID
 	server.DELETE("/feira/:id", controllers.DeleteFeiras)            // Delete row by ID
 	server.POST("/feira", controllers.InsertFeiras)                  // Insert row

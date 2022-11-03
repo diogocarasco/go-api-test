@@ -10,7 +10,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"go-api-test/models"
+	"github.com/diogocarasco/go-api-test/models"
 )
 
 var DB *gorm.DB
