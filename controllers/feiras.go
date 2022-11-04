@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"math"
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	"github.com/diogocarasco/go-api-test/database"
 	"github.com/diogocarasco/go-api-test/models"
@@ -13,7 +15,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// GetFeirasById retrieve registers from FEIRAS by ID
+// GetFeiras retrieve registers from FEIRAS based on the passed ID
 func GetFeirasById(c *gin.Context) {
 
 	var feiras *models.Feiras
@@ -33,8 +35,15 @@ func GetFeirasById(c *gin.Context) {
 // GetFeiras retrieve registers from FEIRAS based on the passed query string filter
 func GetFeiras(c *gin.Context) {
 
-	var feiras *models.Feiras
+	var feiras []models.Feiras
 	whereMap := make(map[string]interface{})
+
+	pageStr := c.DefaultQuery("page", "1")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
 
 	distrito := c.Query("distrito")
 	if distrito != "" {
@@ -56,14 +65,47 @@ func GetFeiras(c *gin.Context) {
 		whereMap["bairro"] = bairro
 	}
 
-	err := database.DB.Where(whereMap).Find(&feiras).Error
+	var bookCount int64
+	err = database.DB.Debug().Model(&feiras).Where(whereMap).Count(&bookCount).Error
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	booksPerPage := 15
+	pageCount := int(math.Ceil(float64(bookCount) / float64(booksPerPage)))
+	if pageCount == 0 {
+		pageCount = 1
+	}
+	if page < 1 || page > pageCount {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	offset := (page - 1) * booksPerPage
+
+	err = database.DB.Debug().Where(whereMap).Offset(offset).Limit(booksPerPage).Find(&feiras).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"data": "{}"})
 		logrus.Info("data:" + "[]")
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": feiras})
+	var prevPage, nextPage string
+	if page > 1 {
+		prevPage = fmt.Sprintf("%d", page-1)
+	}
+	if page < pageCount {
+		nextPage = fmt.Sprintf("%d", page+1)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":      feiras,
+		"pageCount": pageCount,
+		"page":      page,
+		"prevPage":  prevPage,
+		"nextPage":  nextPage,
+	})
 	logrus.Debug(feiras)
 
 }

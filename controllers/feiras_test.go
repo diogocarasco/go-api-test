@@ -3,10 +3,8 @@ package controllers_test
 import (
 	"bytes"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
-	"strconv"
 	"testing"
 
 	configs "github.com/diogocarasco/go-api-test/config"
@@ -68,7 +66,7 @@ func TestGetFeirasById(t *testing.T) {
 	router := configs.GetServer()
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("GET", "/feira/1", nil)
+	req, err := http.NewRequest("GET", "/feira/4", nil)
 	if err != nil {
 		fmt.Print(err.Error())
 		t.Error(err)
@@ -87,7 +85,7 @@ func TestUpdateFeiras(t *testing.T) {
 	router := configs.GetServer()
 
 	w := httptest.NewRecorder()
-	req, err := http.NewRequest("PATCH", "/feira/1", bytes.NewBuffer(exp))
+	req, err := http.NewRequest("PATCH", "/feira/4", bytes.NewBuffer(exp))
 	if err != nil {
 		fmt.Print(err.Error())
 		t.Error(err)
@@ -102,9 +100,9 @@ func TestDeleteFeiras(t *testing.T) {
 	router := configs.GetServer()
 	w := httptest.NewRecorder()
 
-	id := rand.Intn(100)
+	//id := rand.Intn(100)
 
-	req, err := http.NewRequest("DELETE", "/feira/"+strconv.Itoa(id), nil)
+	req, err := http.NewRequest("DELETE", "/feira/4", nil)
 	if err != nil {
 		fmt.Print(err.Error())
 		t.Error(err)

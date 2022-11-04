@@ -29,9 +29,9 @@ func InitializeDB() {
 	)
 
 	for i := 1; i <= 3; i++ {
-
+		//DSN: "host=localhost user=postgres password=postgres database=spfeiras port=5432 sslmode=disable",
 		db, err := gorm.Open(postgres.New(postgres.Config{
-			DSN: "host=localhost user=postgres password=postgres database=spfeiras port=5432 sslmode=disable",
+			DSN: getDsn(),
 		}), &gorm.Config{Logger: newLogger})
 
 		if err != nil {

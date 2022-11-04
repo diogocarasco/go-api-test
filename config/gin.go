@@ -4,11 +4,15 @@ import (
 	"github.com/diogocarasco/go-api-test/controllers"
 	"github.com/diogocarasco/go-api-test/middlewares"
 
+	// swagger embed files
+	// gin-swagger middleware
+
 	"github.com/gin-gonic/gin"
 )
 
 // GetServer returns the default application configuration
 func GetServer() *gin.Engine {
+	gin.SetMode(gin.ReleaseMode)
 	server := gin.New()
 
 	server.MaxMultipartMemory = 8 << 20 // 8 MiB
