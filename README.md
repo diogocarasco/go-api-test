@@ -15,10 +15,13 @@ to install this plugin, follow these steps:
 $ docker compose up
 ```
 
-## Tests
+## Run tests
 ```
 $ go test ./...
 ```
+
+## [Open API](https://github.com/swaggo/swag) documentation
+http://localhost:8080/swagger/index.html
 
 ## Examples
 
