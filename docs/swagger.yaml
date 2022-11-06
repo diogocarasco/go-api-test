@@ -1,0 +1,210 @@
+definitions:
+  models.Feira:
+    properties:
+      areap:
+        type: integer
+      bairro:
+        type: string
+      coddist:
+        type: integer
+      codsubpref:
+        type: integer
+      distrito:
+        type: string
+      id:
+        type: integer
+      lat:
+        type: number
+      logradouro:
+        type: string
+      long:
+        type: number
+      nome_feira:
+        type: string
+      numero:
+        type: string
+      referencia:
+        type: string
+      regiao5:
+        type: string
+      regiao8:
+        type: string
+      registro:
+        type: string
+      setcens:
+        type: integer
+      subpref:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /feira:
+    get:
+      consumes:
+      - application/json
+      description: get fair records based on the querystring filters and pagination
+      parameters:
+      - description: District
+        in: query
+        name: distrito
+        type: string
+      - description: Region
+        in: query
+        name: regiao5
+        type: string
+      - description: Fair name
+        in: query
+        name: nome_feira
+        type: string
+      - description: Neighborhood
+        in: query
+        name: bairro
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Feira'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Fetch fair data
+      tags:
+      - feira
+    patch:
+      consumes:
+      - application/json
+      description: Create a new fair record
+      parameters:
+      - description: District
+        in: query
+        name: distrito
+        type: string
+      - description: Region
+        in: query
+        name: regiao5
+        type: string
+      - description: Fair name
+        in: query
+        name: nome_feira
+        type: string
+      - description: Neighborhood
+        in: query
+        name: bairro
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+      summary: Update fair data
+      tags:
+      - feira
+    post:
+      consumes:
+      - application/json
+      description: Create a new fair record
+      parameters:
+      - description: FEIRAS model
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Feira'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+      summary: Insert fair data
+      tags:
+      - feira
+  /feira/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a single fair record based on ID
+      parameters:
+      - description: Fair ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+      summary: Delete a fair
+      tags:
+      - feira
+    get:
+      consumes:
+      - application/json
+      description: get fair record by ID
+      parameters:
+      - description: Fair ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single fair row
+          schema:
+            $ref: '#/definitions/models.Feira'
+        "400":
+          description: Bad Request
+      summary: Fetches a fair
+      tags:
+      - feira
+  /feira/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Update a CSV that contains fair data
+      parameters:
+      - description: File
+        in: formData
+        name: file
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Fail
+      summary: Update fair data
+      tags:
+      - feira
+swagger: "2.0"

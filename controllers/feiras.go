@@ -15,6 +15,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @BasePath /feiras
+
+// GetFeirasById godoc
+// @Summary     Fetches a fair
+// @Description get fair record by ID
+// @Tags        feira
+// @Accept      json
+// @Produce     json
+// @Param       id  path     int          true "Fair ID"
+// @Success     200 {object} models.Feira "Single fair row"
+// @Failure     400
+// @Router      /feira/{id} [get]
 // GetFeiras retrieve registers from FEIRAS based on the passed ID
 func GetFeirasById(c *gin.Context) {
 
@@ -22,7 +34,7 @@ func GetFeirasById(c *gin.Context) {
 
 	err := database.DB.Where("id = ?", c.Param("id")).First(&feiras).Error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"data": "{}"})
+		c.AbortWithStatus(http.StatusBadRequest)
 		logrus.Info("data:" + "[]")
 		return
 	}
@@ -32,6 +44,21 @@ func GetFeirasById(c *gin.Context) {
 
 }
 
+// GetFeiras godoc
+// @Summary     Fetch fair data
+// @Description get fair records based on the querystring filters and pagination
+// @Tags        feira
+// @Accept      json
+// @Produce     json
+// @Param       distrito   query    string false "District"
+// @Param       regiao5    query    string false "Region"
+// @Param       nome_feira query    string false "Fair name"
+// @Param       bairro     query    string false "Neighborhood"
+// @Param       page       query    int    false "Page"
+// @Success     200        {object} models.Feira
+// @Failure     400
+// @Failure     500
+// @Router      /feira [get]
 // GetFeiras retrieve registers from FEIRAS based on the passed query string filter
 func GetFeiras(c *gin.Context) {
 
@@ -66,9 +93,10 @@ func GetFeiras(c *gin.Context) {
 	}
 
 	var bookCount int64
-	err = database.DB.Debug().Model(&feiras).Where(whereMap).Count(&bookCount).Error
+	err = database.DB.Model(&feiras).Where(whereMap).Count(&bookCount).Error
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
+		logrus.Info("data:" + "400 Bad request - Unable to count rows from FEIRAS")
 		return
 	}
 
@@ -79,6 +107,7 @@ func GetFeiras(c *gin.Context) {
 	}
 	if page < 1 || page > pageCount {
 		c.AbortWithStatus(http.StatusBadRequest)
+		logrus.Info("data:" + "400 Bad request - Invalid pages calculation")
 		return
 	}
 
@@ -86,8 +115,8 @@ func GetFeiras(c *gin.Context) {
 
 	err = database.DB.Debug().Where(whereMap).Offset(offset).Limit(booksPerPage).Find(&feiras).Error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"data": "{}"})
-		logrus.Info("data:" + "[]")
+		c.AbortWithStatus(http.StatusBadRequest)
+		logrus.Info("data: 400 Bad request - " + err.Error())
 		return
 	}
 
@@ -106,10 +135,19 @@ func GetFeiras(c *gin.Context) {
 		"prevPage":  prevPage,
 		"nextPage":  nextPage,
 	})
-	logrus.Debug(feiras)
 
 }
 
+// InsertFeiras godoc
+// @Summary     Insert fair data
+// @Description Create a new fair record
+// @Tags        feira
+// @Accept      json
+// @Produce     json
+// @Param       request body     models.Feira true "FEIRAS model"
+// @Success     200     {string} {id:1}       " JSON with ID value"
+// @Failure     400
+// @Router      /feira [post]
 // InsertFeiras create a new register into FEIRAS
 func InsertFeiras(c *gin.Context) {
 
@@ -117,7 +155,7 @@ func InsertFeiras(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&feirasinput)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatus(http.StatusBadRequest)
 		logrus.Info("error:" + err.Error())
 		return
 	}
@@ -128,6 +166,16 @@ func InsertFeiras(c *gin.Context) {
 
 }
 
+// DeleteFeiras godoc
+// @Summary     Delete a fair
+// @Description Delete a single fair record based on ID
+// @Tags        feira
+// @Accept      json
+// @Produce     json
+// @Param       id  path     int            true "Fair ID"
+// @Success     200 {string} teste "Success"
+// @Failure     400
+// @Router      /feira/{id} [delete]
 // DeleteFeiras remove a FEIRAS register by ID
 func DeleteFeiras(c *gin.Context) {
 
@@ -136,7 +184,7 @@ func DeleteFeiras(c *gin.Context) {
 	err := database.DB.Where("id = ?", c.Param("id")).First(&feiras).Error
 	if err != nil {
 		logrus.Debug(gin.H{"data": err.Error()})
-		c.JSON(http.StatusBadRequest, gin.H{"data": "{}"})
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
@@ -147,13 +195,27 @@ func DeleteFeiras(c *gin.Context) {
 
 }
 
+// UpdateFeiras godoc
+// @Summary     Update fair data
+// @Description Create a new fair record
+// @Tags        feira
+// @Accept      json
+// @Produce     json
+// @Param       distrito   query    string false "District"
+// @Param       regiao5    query    string false "Region"
+// @Param       nome_feira query    string false "Fair name"
+// @Param       bairro     query    string false "Neighborhood"
+// @Param       page                       query int   false "Page"
+// @Success     200        {string} {id:1} " JSON with ID value"
+// @Failure     400
+// @Router      /feira [patch]
 // UpdateFeiras update row from FEIRAS
 func UpdateFeiras(c *gin.Context) {
 
 	var feirasinput models.Feiras
 	err := c.ShouldBindJSON(&feirasinput)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatus(http.StatusBadRequest)
 		logrus.Info("error:" + err.Error())
 		return
 	}
@@ -161,7 +223,7 @@ func UpdateFeiras(c *gin.Context) {
 	var feiras models.Feiras
 	err = database.DB.Where("id = ?", c.Param("id")).First(&feiras).Error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"data": "{}"})
+		c.AbortWithStatus(http.StatusBadRequest)
 		logrus.Info("error:" + err.Error())
 		return
 	}
@@ -176,33 +238,44 @@ func UpdateFeiras(c *gin.Context) {
 
 }
 
+// ImportFeiras godoc
+// @Summary     Import fair data
+// @Description Import a CSV containing fair data
+// @Tags        feira
+// @Accept      mpfd
+// @Produce     json
+// @Param       file               formData                        string                     true "File"
+// @Success     200     {string} {data:true}       " File uploaded"
+// @Failure     400
+// @Router      /feira/upload [post]
+// ImportFeiras imports the CSV from the request file to the database
 func ImportFeiras(c *gin.Context) {
 
 	file, err := c.FormFile("file")
 	if err != nil {
 		logrus.Debug(err.Error())
-		c.String(http.StatusBadRequest, fmt.Sprintf("File %s processed unsuccessfully.", file.Filename))
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
 	filename := filepath.Base(file.Filename)
 	if err := c.SaveUploadedFile(file, "data/import/"+filename); err != nil {
 		logrus.Debug(err.Error())
-		c.String(http.StatusBadRequest, fmt.Sprintf("File %s processed unsuccessfully.", file.Filename))
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
 	content, errors := utils.ImportFile("data/import/" + filename)
 	if errors != nil {
-		c.String(http.StatusBadRequest, fmt.Sprintf("File %s processed unsuccessfully.", file.Filename))
+		c.AbortWithStatus(http.StatusBadRequest)
 	} else {
 		err := database.DB.Create(&content)
 		if err.Error != nil {
-			c.String(http.StatusBadRequest, fmt.Sprintf("File %s processed unsuccessfully.", file.Filename))
+			c.AbortWithStatus(http.StatusBadRequest)
 			logrus.Debug(err.Error)
 			return
 		}
-		c.String(http.StatusOK, fmt.Sprintf("File %s processed successfully.", file.Filename))
+		c.JSON(http.StatusOK, gin.H{"data": true})
 	}
 
 }

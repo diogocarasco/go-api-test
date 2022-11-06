@@ -4,8 +4,9 @@ import (
 	"github.com/diogocarasco/go-api-test/controllers"
 	"github.com/diogocarasco/go-api-test/middlewares"
 
-	// swagger embed files
-	// gin-swagger middleware
+	docs "github.com/diogocarasco/go-api-test/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,7 @@ func GetServer() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.New()
 
+	docs.SwaggerInfo.BasePath = "/api/v1"
 	server.MaxMultipartMemory = 8 << 20 // 8 MiB
 
 	// default middlewares section
@@ -29,5 +31,6 @@ func GetServer() *gin.Engine {
 	server.PATCH("/feira/:id", controllers.UpdateFeiras)             // Update row
 	server.POST("feira/upload", controllers.ImportFeiras)            // Import data from CSV file
 
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	return server
 }
