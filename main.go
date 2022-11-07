@@ -12,7 +12,7 @@ func main() {
 
 	utils.StartupMessage()
 
-	database.InitializeDB()
+	database.InitializeDB("live")
 
 	server := configs.GetServer()
 

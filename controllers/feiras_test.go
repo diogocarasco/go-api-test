@@ -5,17 +5,23 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	configs "github.com/diogocarasco/go-api-test/config"
 	"github.com/diogocarasco/go-api-test/database"
-
+	"github.com/gin-gonic/gin"
 	"github.com/instana/testify/assert"
 )
 
 func init() {
-	database.InitializeDB()
+	database.InitializeDB("mock")
+
 }
+
+var w = httptest.NewRecorder()
+var C, _ = gin.CreateTestContext(w)
 
 func TestHome(t *testing.T) {
 
@@ -29,9 +35,12 @@ func TestHome(t *testing.T) {
 	assert.Equal(t, "\"Hello!!\"", w.Body.String())
 
 }
+
 func TestGetFeiras(t *testing.T) {
 
 	router := configs.GetServer()
+
+	database.Mock.ExpectQuery(regexp.QuoteMeta(`SELECT count(*) FROM "feiras" WHERE "feiras"."deleted_at" IS NULL`)).WillReturnRows(sqlmock.NewRows([]string{"800"}))
 
 	w := httptest.NewRecorder()
 	req, err := http.NewRequest("GET", "/feira", nil)
